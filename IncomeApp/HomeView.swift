@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  HomeView.swift
 //  IncomeApp
 //
 //  Created by Nguyễn Gia Huy on 21/12/25.
@@ -7,18 +7,23 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct HomeView: View {
+
+    @State private var transactions: [TransactionModel] = [
+        TransactionModel(title: "Apple", transactionType: .expense, amount: 5.00, date: Date())
+    ]
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            List {
+                ForEach(transactions, content: {transaction in
+                    Text(transaction.title)
+                })
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
-    ContentView()
+    HomeView()
 }
