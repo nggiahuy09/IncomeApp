@@ -14,6 +14,23 @@ struct HomeView: View {
         TransactionModel(title: "Banana", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
+    fileprivate func FloatingButton() -> some View {
+        return VStack {
+            Spacer()
+            NavigationLink(destination: {
+                AddTransactionView()
+            }, label: {
+                Text("+")
+                    .font(.largeTitle)
+                    .frame(width: 64.0, height: 64.0)
+                    .foregroundStyle(.white)
+            })
+            .background(.primaryLightGreen)
+            .clipShape(.circle)
+            .padding(.bottom, 8.0)
+        }
+    }
+
     fileprivate func BalanceView() -> some View {
         return ZStack {
             RoundedRectangle(cornerRadius: 12.0)
@@ -58,14 +75,28 @@ struct HomeView: View {
     }
 
     var body: some View {
-        VStack {
-            BalanceView()
-            List {
-                ForEach(transactions, content: {transaction in
-                    TransactionView(transaction: transaction)
-                })
+        NavigationStack {
+            ZStack {
+                VStack {
+                    BalanceView()
+                    List {
+                        ForEach(transactions, content: {transaction in
+                            TransactionView(transaction: transaction)
+                        })
+                    }
+                    .scrollContentBackground(.hidden)
+                }
+                FloatingButton()
             }
-            .scrollContentBackground(.hidden)
+            .navigationTitle("Income App")
+            //            .toolbar {
+            //                ToolbarItem(placement: .topBarTrailing, content: {
+            //                    Button(action: {}, label: {
+            //                        Image(systemName: "gearshape.fill")
+            //                            .foregroundStyle(.gray)
+            //                    })
+            //                })
+            //            }
         }
     }
 }
