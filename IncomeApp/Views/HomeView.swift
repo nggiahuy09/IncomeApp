@@ -10,9 +10,11 @@ import SwiftUI
 struct HomeView: View {
 
     @State private var transactions: [Transaction] = [
-        Transaction(title: "Apple", transactionType: .expense, amount: 5.00, date: Date()),
-        Transaction(title: "Banana", transactionType: .expense, amount: 10.2, date: Date())
+        Transaction(title: "Apple", description: "", transactionType: .expense, amount: 5.00, date: Date()),
+        Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
     ]
+
+    @State private var selectedTransaction: Transaction?
 
     fileprivate func FloatingButton() -> some View {
         return VStack {
@@ -81,10 +83,16 @@ struct HomeView: View {
                     BalanceView()
                     List {
                         ForEach(transactions, content: {transaction in
-                            TransactionView(transaction: transaction)
+                            TransactionItemView(transaction: transaction)
+                                .onTapGesture {
+                                    selectedTransaction = transaction
+                                }
                         })
                     }
                     .scrollContentBackground(.hidden)
+                    .navigationDestination(item: $selectedTransaction, destination: {
+                        transactionToEdit in AddTransactionView(transactionToEdit: transactionToEdit, transactions: $transactions)
+                    })
                 }
                 FloatingButton()
             }

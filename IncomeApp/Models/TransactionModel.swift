@@ -7,9 +7,10 @@
 
 import Foundation
 
-struct Transaction: Identifiable {
+struct Transaction: Identifiable, Hashable {
     let id = UUID()
     let title: String
+    let description: String
     let transactionType: TransactionType
     let amount: Double
     let date: Date

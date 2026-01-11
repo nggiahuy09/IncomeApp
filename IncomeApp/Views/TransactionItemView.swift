@@ -1,5 +1,5 @@
 //
-//  TransactionView.swift
+//  TransactionItemView.swift
 //  IncomeApp
 //
 //  Created by Nguyễn Gia Huy on 21/12/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TransactionView: View {
+struct TransactionItemView: View {
     let transaction: Transaction
 
     var body: some View {
@@ -25,7 +25,7 @@ struct TransactionView: View {
                             .font(.system(size: 15.0, weight: .bold))
                     }
                     HStack {
-                        Text("Completed")
+                        Text(transaction.description.isEmpty == true ? "(No description)" : transaction.description)
                             .font(.system(size: 14.0))
                         Spacer()
                         Text(transaction.displayDate)
@@ -43,5 +43,5 @@ struct TransactionView: View {
 }
 
 #Preview {
-    TransactionView(transaction: Transaction(title: "Test", transactionType: .expense, amount: 10.00, date: Date()))
+    TransactionItemView(transaction: Transaction(title: "Test", description: "", transactionType: .expense, amount: 10.00, date: Date()))
 }
