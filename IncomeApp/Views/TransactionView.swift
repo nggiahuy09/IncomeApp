@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TransactionView: View {
-    let transaction: TransactionModel
+    let transaction: Transaction
 
     var body: some View {
         VStack {
@@ -43,5 +43,5 @@ struct TransactionView: View {
 }
 
 #Preview {
-    TransactionView(transaction: TransactionModel(title: "Test", transactionType: .expense, amount: 10.00, date: Date()))
+    TransactionView(transaction: Transaction(title: "Test", transactionType: .expense, amount: 10.00, date: Date()))
 }

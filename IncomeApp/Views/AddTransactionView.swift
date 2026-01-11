@@ -19,7 +19,7 @@ struct AddTransactionView: View {
     @State private var alertMessage: String = ""
     @State private var showAlert: Bool = false
 
-    @Binding var transactions: [TransactionModel]
+    @Binding var transactions: [Transaction]
 
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
@@ -65,7 +65,7 @@ struct AddTransactionView: View {
 
                 }
 
-                let newTransaction = TransactionModel(title: transactionTitle, transactionType: selectedTransactionType, amount: amount, date: Date.now)
+                let newTransaction = Transaction(title: transactionTitle, transactionType: selectedTransactionType, amount: amount, date: Date.now)
 
                 // print(newTransaction)
                 transactions.append(newTransaction)

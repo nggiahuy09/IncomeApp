@@ -9,9 +9,9 @@ import SwiftUI
 
 struct HomeView: View {
 
-    @State private var transactions: [TransactionModel] = [
-        TransactionModel(title: "Apple", transactionType: .expense, amount: 5.00, date: Date()),
-        TransactionModel(title: "Banana", transactionType: .expense, amount: 10.2, date: Date())
+    @State private var transactions: [Transaction] = [
+        Transaction(title: "Apple", transactionType: .expense, amount: 5.00, date: Date()),
+        Transaction(title: "Banana", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
     fileprivate func FloatingButton() -> some View {
