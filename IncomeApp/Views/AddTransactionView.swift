@@ -9,9 +9,17 @@ import SwiftUI
 
 struct AddTransactionView: View {
 
+    @Environment(\.dismiss) private var dismiss
+
     @State private var amount: Double = 0.0
     @State private var transactionTitle: String = ""
     @State private var selectedTransactionType: TransactionType = .expense
+
+    @State private var alertTitle: String = ""
+    @State private var alertMessage: String = ""
+    @State private var showAlert: Bool = false
+
+    @Binding var transactions: [TransactionModel]
 
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
@@ -27,7 +35,7 @@ struct AddTransactionView: View {
                 .keyboardType(.numberPad)
             Divider()
             HStack {
-                Text("Choose Type: ")
+                Text("Choose Type")
                 Spacer()
                 Picker("Choose Type", selection: $selectedTransactionType, content: {
                     ForEach(TransactionType.allCases, content: { type in
@@ -39,7 +47,30 @@ struct AddTransactionView: View {
             TextField("Title", text: $transactionTitle)
                 .font(.system(size: 16.0))
                 .textFieldStyle(.roundedBorder)
-            Button(action: {}, label: {
+            Button(action: {
+                // ensure the transaction title after trimming not empty
+                guard transactionTitle.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines).count >= 1 else {
+                    alertTitle = "Invalid title"
+                    alertMessage = "The transaction title must be not empty!"
+                    showAlert = true
+                    return
+                }
+
+                // ensure the transaction amount must be larger than 0.0
+                guard amount > 0.0 else {
+                    alertTitle = "Invalid amount"
+                    alertMessage = "The transaction amount must be no equals 0.0!"
+                    showAlert = true
+                    return
+
+                }
+
+                let newTransaction = TransactionModel(title: transactionTitle, transactionType: selectedTransactionType, amount: amount, date: Date.now)
+
+                // print(newTransaction)
+                transactions.append(newTransaction)
+                dismiss()
+            }, label: {
                 Text("Create")
                     .font(.system(size: 16.0, weight: .semibold))
                     .foregroundStyle(.white)
@@ -54,9 +85,18 @@ struct AddTransactionView: View {
         }
         .padding(.horizontal)
         .padding(.top, 32.0)
+        .alert(alertTitle, isPresented: $showAlert, actions: {
+            Button(action: {
+
+            }, label: {
+                Text("OK")
+            })
+        }, message: {
+            Text(alertMessage)
+        })
     }
 }
 
 #Preview {
-    AddTransactionView()
+    AddTransactionView(transactions: .constant([]))
 }
