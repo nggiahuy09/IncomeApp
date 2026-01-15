@@ -24,7 +24,6 @@ struct HomeView: View {
             }
     }
 
-
     private var incomes: Double {
         transactions
             .filter { $0.transactionType == .income }   // $0: current transaction
@@ -100,6 +99,10 @@ struct HomeView: View {
         .padding(.horizontal)
     }
 
+    private func delete(at offsets: IndexSet) {
+        transactions.remove(atOffsets: offsets)
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -112,6 +115,7 @@ struct HomeView: View {
                                     selectedTransaction = transaction
                                 }
                         })
+                        .onDelete(perform: delete)
                     }
                     .scrollContentBackground(.hidden)
                     .navigationDestination(item: $selectedTransaction, destination: {
