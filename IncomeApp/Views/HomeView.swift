@@ -16,6 +16,23 @@ struct HomeView: View {
 
     @State private var selectedTransaction: Transaction?
 
+    private var expenses: Double {
+        transactions
+            .filter { $0.transactionType == .expense }  // $0: current transaction
+            .reduce(0.0) { total, transaction in
+                total + transaction.amount
+            }
+    }
+
+
+    private var incomes: Double {
+        transactions
+            .filter { $0.transactionType == .income }   // $0: current transaction
+            .reduce(0.0) { total, transaction in
+                total + transaction.amount
+            }
+    }
+
     fileprivate func FloatingButton() -> some View {
         return VStack {
             Spacer()
@@ -33,7 +50,14 @@ struct HomeView: View {
         }
     }
 
-    fileprivate func BalanceView() -> some View {
+    fileprivate func BalanceView(expenses: Double, incomes: Double) -> some View {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .currency
+
+        let _expenses = numberFormatter.string(from: expenses as NSNumber) ?? "0.00"
+        let _incomes = numberFormatter.string(from: incomes as NSNumber) ?? "0.00"
+        let _balances = numberFormatter.string(from: (incomes - expenses) as NSNumber) ?? "0.00"
+
         return ZStack {
             RoundedRectangle(cornerRadius: 12.0)
                 .fill(Color.primaryLightGreen)
@@ -45,7 +69,7 @@ struct HomeView: View {
                     Spacer()
                 }
                 .padding(.top)
-                Text("$2.00")
+                Text(_balances)
                     .font(.system(size: 42.0, weight: .light))
                     .foregroundStyle(.white)
                 Spacer()
@@ -54,7 +78,7 @@ struct HomeView: View {
                         Text("Expense")
                             .font(.system(size: 15.0, weight: .semibold))
                             .foregroundStyle(.white)
-                        Text("$42.12")
+                        Text(_expenses)
                             .font(.system(size: 15, weight: .regular))
                             .foregroundStyle(.white)
                     }
@@ -62,7 +86,7 @@ struct HomeView: View {
                         Text("Income")
                             .font(.system(size: 15.0, weight: .semibold))
                             .foregroundStyle(.white)
-                        Text("$44.12")
+                        Text(_incomes)
                             .font(.system(size: 15, weight: .regular))
                             .foregroundStyle(.white)
                     }
@@ -80,7 +104,7 @@ struct HomeView: View {
         NavigationStack {
             ZStack {
                 VStack {
-                    BalanceView()
+                    BalanceView(expenses: expenses, incomes: incomes)
                     List {
                         ForEach(transactions, content: {transaction in
                             TransactionItemView(transaction: transaction)
