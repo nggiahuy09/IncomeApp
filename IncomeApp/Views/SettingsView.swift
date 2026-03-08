@@ -11,12 +11,13 @@ struct SettingsView: View {
 
     @AppStorage("orderDescending") private var orderDescending = true
     //    @State private var ordering = Ordering.newest
-    @State private var currency = Currency.usd;
+    @AppStorage("currency") private var currency = Currency.usd;
     @State private var filterMinimum: Double = 0.0
 
     var filterMinimumFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
+        numberFormatter.locale = currency.locale
         return numberFormatter
     }
 
