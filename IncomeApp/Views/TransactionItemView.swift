@@ -10,6 +10,8 @@ import SwiftUI
 struct TransactionItemView: View {
     let transaction: Transaction
 
+    @AppStorage("currency") var currency = Currency.usd
+
     var body: some View {
         VStack {
             HStack(spacing: 12.0) {
@@ -21,7 +23,7 @@ struct TransactionItemView: View {
                         Text(transaction.title)
                             .font(.system(size: 16.0, weight: .bold))
                         Spacer()
-                        Text(transaction.displayAmount)
+                        Text(transaction.displayAmount(currency: currency))
                             .font(.system(size: 15.0, weight: .bold))
                     }
                     HStack {

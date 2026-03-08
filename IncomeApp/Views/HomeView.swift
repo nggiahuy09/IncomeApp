@@ -14,6 +14,19 @@ struct HomeView: View {
         Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
+    @AppStorage("orderDescending") var orderDescending = false
+    @AppStorage("currency") var currency = Currency.usd
+    @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
+
+    private var displayTransactions: [Transaction] {
+        // sorting by date
+        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(by: {$0.date < $1.date})
+        // filtering by minimum
+        let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
+        return filteredTransactions
+    }
+
+    @State private var showSettingsView: Bool = false
     @State private var selectedTransaction: Transaction?
 
     private var expenses: Double {
@@ -52,6 +65,7 @@ struct HomeView: View {
     fileprivate func BalanceView(expenses: Double, incomes: Double) -> some View {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
+        numberFormatter.locale = currency.locale
 
         let _expenses = numberFormatter.string(from: expenses as NSNumber) ?? "0.00"
         let _incomes = numberFormatter.string(from: incomes as NSNumber) ?? "0.00"
@@ -109,7 +123,7 @@ struct HomeView: View {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(transactions, content: {transaction in
+                        ForEach(displayTransactions, content: {transaction in
                             TransactionItemView(transaction: transaction)
                                 .onTapGesture {
                                     selectedTransaction = transaction
@@ -125,14 +139,18 @@ struct HomeView: View {
                 FloatingButton()
             }
             .navigationTitle("Income App")
-            //            .toolbar {
-            //                ToolbarItem(placement: .topBarTrailing, content: {
-            //                    Button(action: {}, label: {
-            //                        Image(systemName: "gearshape.fill")
-            //                            .foregroundStyle(.gray)
-            //                    })
-            //                })
-            //            }
+            .navigationDestination(isPresented: $showSettingsView, destination: {
+                SettingsView()
+            })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing, content: {
+                    Button(action: { showSettingsView = true },
+                           label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.gray)
+                    })
+                })
+            }
         }
     }
 }
