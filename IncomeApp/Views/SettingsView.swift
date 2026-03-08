@@ -9,10 +9,10 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @AppStorage("orderDescending") private var orderDescending = true
+    @AppStorage("orderDescending") var orderDescending = true
     //    @State private var ordering = Ordering.newest
-    @AppStorage("currency") private var currency = Currency.usd;
-    @State private var filterMinimum: Double = 0.0
+    @AppStorage("currency") var currency = Currency.usd;
+    @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
 
     var filterMinimumFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()

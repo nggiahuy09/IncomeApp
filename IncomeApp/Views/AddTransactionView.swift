@@ -24,7 +24,7 @@ struct AddTransactionView: View {
 
     @Binding var transactions: [Transaction]
 
-    @AppStorage("currency") private var currency = Currency.usd
+    @AppStorage("currency") var currency = Currency.usd
 
     var numberFormatter: NumberFormatter {
         let numberFormatter = NumberFormatter()

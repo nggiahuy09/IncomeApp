@@ -14,13 +14,16 @@ struct HomeView: View {
         Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
-    @AppStorage("orderDescending") private var orderDescending = false
-    @AppStorage("currency") private var currency = Currency.usd
+    @AppStorage("orderDescending") var orderDescending = false
+    @AppStorage("currency") var currency = Currency.usd
+    @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
 
     private var displayTransactions: [Transaction] {
+        // sorting by date
         let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(by: {$0.date < $1.date})
-
-        return sortedTransactions
+        // filtering by minimum
+        let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
+        return filteredTransactions
     }
 
     @State private var showSettingsView: Bool = false
