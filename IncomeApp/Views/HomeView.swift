@@ -14,6 +14,14 @@ struct HomeView: View {
         Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
+    @AppStorage("orderDescending") private var orderDescending = false
+
+    private var displayTransactions: [Transaction] {
+        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(by: {$0.date < $1.date})
+
+        return sortedTransactions
+    }
+
     @State private var showSettingsView: Bool = false
     @State private var selectedTransaction: Transaction?
 
@@ -110,7 +118,7 @@ struct HomeView: View {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(transactions, content: {transaction in
+                        ForEach(displayTransactions, content: {transaction in
                             TransactionItemView(transaction: transaction)
                                 .onTapGesture {
                                     selectedTransaction = transaction

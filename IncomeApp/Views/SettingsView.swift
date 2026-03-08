@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    @State private var orderDescending = true
+    @AppStorage("orderDescending") private var orderDescending = true
     //    @State private var ordering = Ordering.newest
     @State private var currency = Currency.usd;
     @State private var filterMinimum: Double = 0.0
