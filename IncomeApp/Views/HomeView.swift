@@ -14,6 +14,7 @@ struct HomeView: View {
         Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
     ]
 
+    @State private var showSettingsView: Bool = false
     @State private var selectedTransaction: Transaction?
 
     private var expenses: Double {
@@ -125,14 +126,18 @@ struct HomeView: View {
                 FloatingButton()
             }
             .navigationTitle("Income App")
-            //            .toolbar {
-            //                ToolbarItem(placement: .topBarTrailing, content: {
-            //                    Button(action: {}, label: {
-            //                        Image(systemName: "gearshape.fill")
-            //                            .foregroundStyle(.gray)
-            //                    })
-            //                })
-            //            }
+            .navigationDestination(isPresented: $showSettingsView, destination: {
+                SettingsView()
+            })
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing, content: {
+                    Button(action: { showSettingsView = true },
+                           label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundStyle(.gray)
+                    })
+                })
+            }
         }
     }
 }
