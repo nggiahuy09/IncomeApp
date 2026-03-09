@@ -5,6 +5,22 @@
 //  Created by Nguyễn Gia Huy on 21/12/25.
 //
 
+/*
+1. Object Graph Management
+2. Persistence Store Coordinator
+3. Persistence -> SQLite
+*/
+
+/*
+1. Persistence Container -> Entity
+2. DataManager -> Managed Object Context
+3. Create
+4. Read -> FetchRequest
+5. Update
+6. Delete
+7. Im Memory Persistence Store (Previews)
+*/
+
 import SwiftUI
 
 struct HomeView: View {
