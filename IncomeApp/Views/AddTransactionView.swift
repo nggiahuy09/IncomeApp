@@ -12,6 +12,7 @@ struct AddTransactionView: View {
     var transactionToEdit: Transaction?
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.managedObjectContext) private var viewContext
 
     @State private var amount: Double = 0.0
     @State private var transactionTitle: String = ""
@@ -95,7 +96,24 @@ struct AddTransactionView: View {
 
                         transactions[index] = newTransaction
                     } else {
-                        transactions.append(newTransaction)
+                        let transaction = TransactionItem(context: viewContext)
+                        transaction.id = UUID()
+                        transaction.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transaction.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transaction.type = Int16(selectedTransactionType.rawValue)
+                        transaction.amount = amount
+                        transaction.date = Date()
+
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            alertTitle = "Something went wrong"
+                            alertMessage = "Cannot create this transaction right now."
+                            showAlert = true
+                            return
+                        }
+
+                        // transactions.append(newTransaction)
                     }
 
                     dismiss()
