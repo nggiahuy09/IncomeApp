@@ -154,6 +154,9 @@ struct HomeView: View {
                 FloatingButton()
             }
             .navigationTitle("Income App")
+            .navigationDestination(item: $selectedTransaction, destination: { transactionToEdit in
+                AddTransactionView(transactionToEdit: transactionToEdit, transactions: $transactions)
+            })
             .navigationDestination(isPresented: $showSettingsView, destination: {
                 SettingsView()
             })
