@@ -24,15 +24,15 @@
 import SwiftUI
 
 struct HomeView: View {
-    
+
     @State private var transactions: [Transaction] = []
-    
+
     @AppStorage("orderDescending") var orderDescending = false
     @AppStorage("currency") var currency = Currency.usd
     @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
-    
+
     @FetchRequest(sortDescriptors: []) var transactionsCoreData: FetchedResults<TransactionItem>
-    
+
     private var displayTransactions: [Transaction] {
         // sorting by date
         let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(
@@ -42,10 +42,10 @@ struct HomeView: View {
         let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
         return filteredTransactions
     }
-    
+
     @State private var showSettingsView: Bool = false
     @State private var selectedTransaction: TransactionItem?
-    
+
     private var expenses: Double {
         transactions
             .filter { $0.transactionType == .expense }  // $0: current transaction
@@ -53,7 +53,7 @@ struct HomeView: View {
                 total + transaction.amount
             }
     }
-    
+
     private var incomes: Double {
         transactions
             .filter { $0.transactionType == .income }   // $0: current transaction
@@ -61,12 +61,12 @@ struct HomeView: View {
                 total + transaction.amount
             }
     }
-    
+
     fileprivate func FloatingButton() -> some View {
         return VStack {
             Spacer()
             NavigationLink(destination: {
-                AddTransactionView(transactions: transactions)
+                AddTransactionView(transactions: $transactions)
             }, label: {
                 Text("+")
                     .font(.largeTitle)
@@ -83,11 +83,11 @@ struct HomeView: View {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = currency.locale
-        
+
         let _expenses = numberFormatter.string(from: expenses as NSNumber) ?? "0.00"
         let _incomes = numberFormatter.string(from: incomes as NSNumber) ?? "0.00"
         let _balances = numberFormatter.string(from: (incomes - expenses) as NSNumber) ?? "0.00"
-        
+
         return ZStack {
             RoundedRectangle(cornerRadius: 12.0)
                 .fill(Color.primaryLightGreen)
@@ -129,11 +129,11 @@ struct HomeView: View {
         .frame(height: 150.0)
         .padding(.horizontal)
     }
-    
+
     private func delete(at offsets: IndexSet) {
         transactions.remove(atOffsets: offsets)
     }
-    
+
     var body: some View {
         NavigationStack {
             ZStack {
