@@ -6,45 +6,46 @@
 //
 
 /*
-1. Object Graph Management
-2. Persistence Store Coordinator
-3. Persistence -> SQLite
-*/
+ 1. Object Graph Management
+ 2. Persistence Store Coordinator
+ 3. Persistence -> SQLite
+ */
 
 /*
-1. Persistence Container -> Entity
-2. DataManager -> Managed Object Context
-3. Create
-4. Read -> FetchRequest
-5. Update
-6. Delete
-7. Im Memory Persistence Store (Previews)
-*/
+ 1. Persistence Container -> Entity
+ 2. DataManager -> Managed Object Context
+ 3. Create
+ 4. Read -> FetchRequest
+ 5. Update
+ 6. Delete
+ 7. Im Memory Persistence Store (Previews)
+ */
 
 import SwiftUI
 
 struct HomeView: View {
-
-    @State private var transactions: [Transaction] = [
-        Transaction(title: "Apple", description: "", transactionType: .expense, amount: 5.00, date: Date()),
-        Transaction(title: "Banana", description: "", transactionType: .expense, amount: 10.2, date: Date())
-    ]
-
+    
+    @State private var transactions: [Transaction] = []
+    
     @AppStorage("orderDescending") var orderDescending = false
     @AppStorage("currency") var currency = Currency.usd
     @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
-
+    
+    @FetchRequest(sortDescriptors: []) var transactionsCoreData: FetchedResults<TransactionItem>
+    
     private var displayTransactions: [Transaction] {
         // sorting by date
-        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(by: {$0.date < $1.date})
+        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(
+            by: {$0.date < $1.date
+            })
         // filtering by minimum
         let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
         return filteredTransactions
     }
-
+    
     @State private var showSettingsView: Bool = false
-    @State private var selectedTransaction: Transaction?
-
+    @State private var selectedTransaction: TransactionItem?
+    
     private var expenses: Double {
         transactions
             .filter { $0.transactionType == .expense }  // $0: current transaction
@@ -52,7 +53,7 @@ struct HomeView: View {
                 total + transaction.amount
             }
     }
-
+    
     private var incomes: Double {
         transactions
             .filter { $0.transactionType == .income }   // $0: current transaction
@@ -60,12 +61,12 @@ struct HomeView: View {
                 total + transaction.amount
             }
     }
-
+    
     fileprivate func FloatingButton() -> some View {
         return VStack {
             Spacer()
             NavigationLink(destination: {
-                AddTransactionView(transactions: $transactions)
+                AddTransactionView(transactions: transactions)
             }, label: {
                 Text("+")
                     .font(.largeTitle)
@@ -77,16 +78,16 @@ struct HomeView: View {
             .padding(.bottom, 8.0)
         }
     }
-
+    
     fileprivate func BalanceView(expenses: Double, incomes: Double) -> some View {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
         numberFormatter.locale = currency.locale
-
+        
         let _expenses = numberFormatter.string(from: expenses as NSNumber) ?? "0.00"
         let _incomes = numberFormatter.string(from: incomes as NSNumber) ?? "0.00"
         let _balances = numberFormatter.string(from: (incomes - expenses) as NSNumber) ?? "0.00"
-
+        
         return ZStack {
             RoundedRectangle(cornerRadius: 12.0)
                 .fill(Color.primaryLightGreen)
@@ -128,29 +129,27 @@ struct HomeView: View {
         .frame(height: 150.0)
         .padding(.horizontal)
     }
-
+    
     private func delete(at offsets: IndexSet) {
         transactions.remove(atOffsets: offsets)
     }
-
+    
     var body: some View {
         NavigationStack {
             ZStack {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(displayTransactions, content: {transaction in
-                            TransactionItemView(transaction: transaction)
-                                .onTapGesture {
-                                    selectedTransaction = transaction
-                                }
+                        ForEach(transactionsCoreData, content: {transaction in
+                            Button(action: {
+                                selectedTransaction = transaction
+                            }, label: {
+                                TransactionItemView(transaction: transaction)
+                            })
                         })
                         .onDelete(perform: delete)
                     }
                     .scrollContentBackground(.hidden)
-                    .navigationDestination(item: $selectedTransaction, destination: {
-                        transactionToEdit in AddTransactionView(transactionToEdit: transactionToEdit, transactions: $transactions)
-                    })
                 }
                 FloatingButton()
             }
