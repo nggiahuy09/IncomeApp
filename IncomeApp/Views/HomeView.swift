@@ -33,6 +33,8 @@ struct HomeView: View {
 
     @FetchRequest(sortDescriptors: []) var transactionsCoreData: FetchedResults<TransactionItem>
 
+    @Environment(\.managedObjectContext) private var viewContext
+
     private var displayTransactions: [Transaction] {
         // sorting by date
         let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(
@@ -131,7 +133,10 @@ struct HomeView: View {
     }
 
     private func delete(at offsets: IndexSet) {
-        transactions.remove(atOffsets: offsets)
+        for index in offsets {
+            let transactionToDelete = transactionsCoreData[index]
+            viewContext.delete(transactionToDelete)
+        }
     }
 
     var body: some View {
