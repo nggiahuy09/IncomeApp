@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddTransactionView: View {
 
-    var transactionToEdit: Transaction?
+    var transactionToEdit: TransactionItem?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) private var viewContext
@@ -76,25 +76,21 @@ struct AddTransactionView: View {
 
                     }
 
-                    let newTransaction = Transaction(
-                        title: transactionTitle,
-                        description: transactionDes,
-                        transactionType: selectedTransactionType,
-                        amount: amount,
-                        date: Date.now
-                    )
-                    // print(newTransaction)
-
                     // check the transaction to edit is not null
                     if let transactionToEdit = transactionToEdit {
-                        guard let index = transactions.firstIndex(of: transactionToEdit) else {
+                        transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transactionToEdit.type = Int16(selectedTransactionType.rawValue)
+                        transactionToEdit.amount = amount
+
+                        do {
+                            try viewContext.save()
+                        } catch {
                             alertTitle = "Something went wrong"
                             alertMessage = "Cannot update this transaction right now."
                             showAlert = true
                             return
                         }
-
-                        transactions[index] = newTransaction
                     } else {
                         let transaction = TransactionItem(context: viewContext)
                         transaction.id = UUID()
@@ -134,10 +130,19 @@ struct AddTransactionView: View {
         .onAppear(perform: {
             // check if the transaction to edit is not null
             if let transactionToEdit = transactionToEdit {
-                amount = transactionToEdit.amount
-                transactionTitle = transactionToEdit.title
-                transactionDes = transactionToEdit.description
-                selectedTransactionType = transactionToEdit.transactionType
+                transactionTitle = transactionToEdit.wrappedTitle
+                transactionDes = transactionToEdit.wrappedDes
+                selectedTransactionType = transactionToEdit.wrappedTransactionType
+                amount = transactionToEdit.wrappedAmount
+
+                do {
+                    try viewContext.save()
+                } catch {
+                    alertTitle = "Something went wrong"
+                    alertMessage = "Cannot update this transaction right now."
+                    showAlert = true
+                    return
+                }
             }
         })
         .padding(.horizontal)

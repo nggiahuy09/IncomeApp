@@ -8,42 +8,41 @@
 import SwiftUI
 
 struct TransactionItemView: View {
-    let transaction: Transaction
-
+    let transaction: TransactionItem
     @AppStorage("currency") var currency = Currency.usd
 
     var body: some View {
         VStack {
             HStack(spacing: 12.0) {
-                Image(systemName: transaction.transactionType == .income ? "arrow.up.forward" : "arrow.down.forward")
+                Image(systemName: transaction.wrappedTransactionType == .income ? "arrow.up.forward" : "arrow.down.forward")
                     .font(.system(size: 16.0, weight: .bold))
-                    .foregroundStyle(transaction.transactionType == .income ? .green : .red)
+                    .foregroundStyle(transaction.wrappedTransactionType == .income ? .green : .red)
                 VStack(alignment: .leading, spacing: 8.0) {
                     HStack {
-                        Text(transaction.title)
+                        Text(transaction.wrappedTitle)
                             .font(.system(size: 16.0, weight: .bold))
+                            .foregroundStyle(.black)
                         Spacer()
-                        Text(transaction.displayAmount(currency: currency))
+                        Text(transaction.wrappedAmount.formatted())
                             .font(.system(size: 15.0, weight: .bold))
+                            .foregroundStyle(.black)
                     }
                     HStack {
-                        Text(transaction.description.isEmpty == true ? "(No description)" : transaction.description)
+                        Text(transaction.wrappedDes.isEmpty == true ? "(No description)" : transaction.description)
                             .font(.system(size: 14.0))
+                            .foregroundStyle(.black)
                         Spacer()
-                        Text(transaction.displayDate)
+                        Text(transaction.wrappedDate?.formatted() ?? "")
                             .font(.system(size: 14.0))
                             .padding(.vertical, 4.0)
                             .padding(.horizontal, 8.0)
                             .background(Color.lightGradeShade.opacity(0.5))
                             .clipShape(RoundedRectangle(cornerRadius: 8.0))
+                            .foregroundStyle(.black)
                     }
                 }
             }
         }
         .listRowSeparator(.hidden)
     }
-}
-
-#Preview {
-    TransactionItemView(transaction: Transaction(title: "Test", description: "", transactionType: .expense, amount: 10.00, date: Date()))
 }
