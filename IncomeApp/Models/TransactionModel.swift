@@ -13,13 +13,15 @@ import SwiftData
 
     var id: UUID
     var title: String
+    var des: String
     var type: TransactionType
     var amount: Double
     var date: Date
 
-    init(id: UUID, title: String, type: TransactionType, amount: Double, date: Date) {
+    init(id: UUID, title: String, description: String, type: TransactionType, amount: Double, date: Date) {
         self.id = id
         self.title = title
+        self.des = description
         self.type = type
         self.amount = amount
         self.date = date

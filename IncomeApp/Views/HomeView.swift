@@ -5,12 +5,20 @@
 //  Created by Nguyễn Gia Huy on 21/12/25.
 //
 
+// SwiftData flow
+/*
+1. Model
+2. Model Container (Model Context)
+3. Create - Read - Update - Delete
+
+*/
+
+// CoreData flow
 /*
  1. Object Graph Management
  2. Persistence Store Coordinator
  3. Persistence -> SQLite
  */
-
 /*
  1. Persistence Container -> Entity
  2. DataManager -> Managed Object Context
