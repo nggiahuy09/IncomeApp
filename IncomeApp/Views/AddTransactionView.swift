@@ -10,7 +10,8 @@ import SwiftData
 
 struct AddTransactionView: View {
 
-    var transactionToEdit: TransactionItem?
+    //    var transactionToEdit: TransactionItem?
+    var transactionToEdit: TransactionModel?
 
     @Environment(\.dismiss) private var dismiss
     //    @Environment(\.managedObjectContext) private var viewContext
@@ -78,10 +79,10 @@ struct AddTransactionView: View {
 
                     // check the transaction to edit is not null
                     if let transactionToEdit = transactionToEdit {
-                        transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                        transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
-                        transactionToEdit.type = Int16(selectedTransactionType.rawValue)
-                        transactionToEdit.amount = amount
+                        //                        transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        //                        transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        //                        transactionToEdit.type = Int16(selectedTransactionType.rawValue)
+                        //                        transactionToEdit.amount = amount
 
                         //                        do {
                         //                            try viewContext.save()
@@ -91,6 +92,13 @@ struct AddTransactionView: View {
                         //                            showAlert = true
                         //                            return
                         //                        }
+
+                        transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        transactionToEdit.type = selectedTransactionType
+                        transactionToEdit.amount = amount
+
+
                     } else {
                         // coreData code
 
@@ -145,10 +153,10 @@ struct AddTransactionView: View {
         .onAppear(perform: {
             // check if the transaction to edit is not null
             if let transactionToEdit = transactionToEdit {
-                transactionTitle = transactionToEdit.wrappedTitle
-                transactionDes = transactionToEdit.wrappedDes
-                selectedTransactionType = transactionToEdit.wrappedTransactionType
-                amount = transactionToEdit.wrappedAmount
+                //                transactionTitle = transactionToEdit.wrappedTitle
+                //                transactionDes = transactionToEdit.wrappedDes
+                //                selectedTransactionType = transactionToEdit.wrappedTransactionType
+                //                amount = transactionToEdit.wrappedAmount
 
                 //                do {
                 //                    try viewContext.save()
@@ -158,6 +166,11 @@ struct AddTransactionView: View {
                 //                    showAlert = true
                 //                    return
                 //                }
+
+                transactionTitle = transactionToEdit.title
+                transactionDes = transactionToEdit.des
+                selectedTransactionType = transactionToEdit.type
+                amount = transactionToEdit.amount
             }
         })
         .padding(.horizontal)

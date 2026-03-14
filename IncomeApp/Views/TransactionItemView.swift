@@ -6,30 +6,32 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct TransactionItemView: View {
-    let transaction: TransactionItem
+    //    let transaction: TransactionItem
+    let transaction: TransactionModel
     @AppStorage("currency") var currency = Currency.usd
-
+    
     var body: some View {
         VStack {
             HStack(spacing: 12.0) {
-                Image(systemName: transaction.wrappedTransactionType == .income ? "arrow.up.forward" : "arrow.down.forward")
+                Image(systemName: transaction.type == .income ? "arrow.up.forward" : "arrow.down.forward")
                     .font(.system(size: 16.0, weight: .bold))
-                    .foregroundStyle(transaction.wrappedTransactionType == .income ? .green : .red)
+                    .foregroundStyle(transaction.type == .income ? .green : .red)
                 VStack(alignment: .leading, spacing: 8.0) {
                     HStack {
-                        Text(transaction.wrappedTitle)
+                        Text(transaction.title)
                             .font(.system(size: 16.0, weight: .bold))
                         Spacer()
-                        Text(transaction.wrappedAmount.formatted())
+                        Text(transaction.amount.formatted())
                             .font(.system(size: 15.0, weight: .bold))
                     }
                     HStack {
-                        Text(transaction.wrappedDes.isEmpty == true ? "(No description)" : transaction.description)
+                        Text(transaction.des.isEmpty == true ? "(No description)" : transaction.des)
                             .font(.system(size: 14.0))
                         Spacer()
-                        Text(transaction.wrappedDate.formatted())
+                        Text(transaction.date.formatted())
                             .font(.system(size: 14.0))
                             .padding(.vertical, 4.0)
                             .padding(.horizontal, 8.0)
