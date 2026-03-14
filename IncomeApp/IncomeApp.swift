@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct IncomeAppApp: App {
@@ -14,8 +15,13 @@ struct IncomeAppApp: App {
 
     var body: some Scene {
         WindowGroup {
+            //             HomeView()
+            //                .environment(\.managedObjectContext, dataManager.container.viewContext)
+
             HomeView()
-                .environment(\.managedObjectContext, dataManager.container.viewContext)
+                .modelContainer(for: [
+                    TransactionModel.self
+                ])
         }
     }
 }

@@ -6,13 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct AddTransactionView: View {
 
-    var transactionToEdit: TransactionItem?
+    //    var transactionToEdit: TransactionItem?
+    var transactionToEdit: TransactionModel?
 
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.managedObjectContext) private var viewContext
+    //    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.modelContext) private var modelContext
 
     @State private var amount: Double = 0.0
     @State private var transactionTitle: String = ""
@@ -22,8 +25,6 @@ struct AddTransactionView: View {
     @State private var alertTitle: String = ""
     @State private var alertMessage: String = ""
     @State private var showAlert: Bool = false
-
-    
 
     @AppStorage("currency") var currency = Currency.usd
 
@@ -78,38 +79,60 @@ struct AddTransactionView: View {
 
                     // check the transaction to edit is not null
                     if let transactionToEdit = transactionToEdit {
+                        //                        transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                        //                        transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                        //                        transactionToEdit.type = Int16(selectedTransactionType.rawValue)
+                        //                        transactionToEdit.amount = amount
+
+                        //                        do {
+                        //                            try viewContext.save()
+                        //                        } catch {
+                        //                            alertTitle = "Something went wrong"
+                        //                            alertMessage = "Cannot update this transaction right now."
+                        //                            showAlert = true
+                        //                            return
+                        //                        }
+
                         transactionToEdit.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
                         transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
-                        transactionToEdit.type = Int16(selectedTransactionType.rawValue)
+                        transactionToEdit.type = selectedTransactionType
                         transactionToEdit.amount = amount
 
-                        do {
-                            try viewContext.save()
-                        } catch {
-                            alertTitle = "Something went wrong"
-                            alertMessage = "Cannot update this transaction right now."
-                            showAlert = true
-                            return
-                        }
+
                     } else {
-                        let transaction = TransactionItem(context: viewContext)
-                        transaction.id = UUID()
-                        transaction.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
-                        transaction.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
-                        transaction.type = Int16(selectedTransactionType.rawValue)
-                        transaction.amount = amount
-                        transaction.date = Date()
+                        // coreData code
 
-                        do {
-                            try viewContext.save()
-                        } catch {
-                            alertTitle = "Something went wrong"
-                            alertMessage = "Cannot create this transaction right now."
-                            showAlert = true
-                            return
-                        }
+                        /*
+                         let transaction = TransactionItem(context: viewContext)
+                         transaction.id = UUID()
+                         transaction.title = transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+                         transaction.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
+                         transaction.type = Int16(selectedTransactionType.rawValue)
+                         transaction.amount = amount
+                         transaction.date = Date()
 
-                        // transactions.append(newTransaction)
+                         do {
+                         try viewContext.save()
+                         } catch {
+                         alertTitle = "Something went wrong"
+                         alertMessage = "Cannot create this transaction right now."
+                         showAlert = true
+                         return
+                         }
+
+                         transactions.append(newTransaction)
+                         */
+
+                        // swiftData code
+                        let transaction = TransactionModel(
+                            id: UUID(),
+                            title: transactionTitle.trimmingCharacters(in: .whitespacesAndNewlines),
+                            description: transactionDes.trimmingCharacters(in: .whitespacesAndNewlines),
+                            type: selectedTransactionType,
+                            amount: amount,
+                            date: Date()
+                        )
+                        modelContext.insert(transaction)
                     }
 
                     dismiss()
@@ -130,19 +153,24 @@ struct AddTransactionView: View {
         .onAppear(perform: {
             // check if the transaction to edit is not null
             if let transactionToEdit = transactionToEdit {
-                transactionTitle = transactionToEdit.wrappedTitle
-                transactionDes = transactionToEdit.wrappedDes
-                selectedTransactionType = transactionToEdit.wrappedTransactionType
-                amount = transactionToEdit.wrappedAmount
+                //                transactionTitle = transactionToEdit.wrappedTitle
+                //                transactionDes = transactionToEdit.wrappedDes
+                //                selectedTransactionType = transactionToEdit.wrappedTransactionType
+                //                amount = transactionToEdit.wrappedAmount
 
-                do {
-                    try viewContext.save()
-                } catch {
-                    alertTitle = "Something went wrong"
-                    alertMessage = "Cannot update this transaction right now."
-                    showAlert = true
-                    return
-                }
+                //                do {
+                //                    try viewContext.save()
+                //                } catch {
+                //                    alertTitle = "Something went wrong"
+                //                    alertMessage = "Cannot update this transaction right now."
+                //                    showAlert = true
+                //                    return
+                //                }
+
+                transactionTitle = transactionToEdit.title
+                transactionDes = transactionToEdit.des
+                selectedTransactionType = transactionToEdit.type
+                amount = transactionToEdit.amount
             }
         })
         .padding(.horizontal)

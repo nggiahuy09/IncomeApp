@@ -5,12 +5,20 @@
 //  Created by Nguyễn Gia Huy on 21/12/25.
 //
 
+// SwiftData flow
+/*
+ 1. Model
+ 2. Model Container (Model Context)
+ 3. Create - Read - Update - Delete
+
+ */
+
+// CoreData flow
 /*
  1. Object Graph Management
  2. Persistence Store Coordinator
  3. Persistence -> SQLite
  */
-
 /*
  1. Persistence Container -> Entity
  2. DataManager -> Managed Object Context
@@ -22,40 +30,46 @@
  */
 
 import SwiftUI
+import SwiftData
 
 struct HomeView: View {
     @AppStorage("orderDescending") var orderDescending = false
     @AppStorage("currency") var currency = Currency.usd
     @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
 
-    @FetchRequest(sortDescriptors: []) var transactions: FetchedResults<TransactionItem>
+    //    @FetchRequest(sortDescriptors: []) var transactions: FetchedResults<TransactionItem>
+    //    @Environment(\.managedObjectContext) private var viewContext
 
-    @Environment(\.managedObjectContext) private var viewContext
+    @Query var transactionsSwiftData: [TransactionModel]
 
-    private var displayTransactions: [TransactionItem] {
-        // sorting by date
-        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.wrappedDate > $1.wrappedDate}) : transactions.sorted(
-            by: {$0.wrappedDate < $1.wrappedDate
-            })
-        // filtering by minimum
-        let filteredTransactions = sortedTransactions.filter({$0.wrappedAmount > filterMinimum})
+    private var displayTransactions: [TransactionModel] {
+        //        // sorting by date
+        //        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.wrappedDate > $1.wrappedDate}) : transactions.sorted(
+        //            by: {$0.wrappedDate < $1.wrappedDate
+        //            })
+        //        // filtering by minimum
+        //        let filteredTransactions = sortedTransactions.filter({$0.wrappedAmount > filterMinimum})
+
+        let sortedTransactions = orderDescending ? transactionsSwiftData.sorted(by: {$0.date > $1.date}) : transactionsSwiftData.sorted(by: {$0.date < $1.date})
+        let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
         return filteredTransactions
     }
 
     @State private var showSettingsView: Bool = false
-    @State private var selectedTransaction: TransactionItem?
+    //    @State private var selectedTransaction: TransactionItem?
+    @State private var selectedTransaction: TransactionModel?
 
     private var expenses: Double {
-        transactions
-            .filter { $0.wrappedTransactionType == .expense }  // $0: current transaction
+        transactionsSwiftData
+            .filter { $0.type == .expense }  // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
             }
     }
 
     private var incomes: Double {
-        transactions
-            .filter { $0.wrappedTransactionType == .income }   // $0: current transaction
+        transactionsSwiftData
+            .filter { $0.type == .income }   // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
             }
@@ -131,8 +145,8 @@ struct HomeView: View {
 
     private func delete(at offsets: IndexSet) {
         for index in offsets {
-            let transactionToDelete = transactions[index]
-            viewContext.delete(transactionToDelete)
+            let transactionToDelete = transactionsSwiftData[index]
+            //            viewContext.delete(transactionToDelete)
         }
     }
 
@@ -142,7 +156,7 @@ struct HomeView: View {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(transactions, content: {transaction in
+                        ForEach(displayTransactions, content: {transaction in
                             Button(action: {
                                 selectedTransaction = transaction
                             }, label: {
