@@ -23,7 +23,7 @@ struct AddTransactionView: View {
     @State private var alertMessage: String = ""
     @State private var showAlert: Bool = false
 
-    @Binding var transactions: [Transaction]
+    
 
     @AppStorage("currency") var currency = Currency.usd
 
@@ -160,5 +160,5 @@ struct AddTransactionView: View {
 }
 
 #Preview {
-    AddTransactionView(transactions: .constant([]))
+    AddTransactionView()
 }

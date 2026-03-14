@@ -21,24 +21,20 @@ struct TransactionItemView: View {
                     HStack {
                         Text(transaction.wrappedTitle)
                             .font(.system(size: 16.0, weight: .bold))
-                            .foregroundStyle(.black)
                         Spacer()
                         Text(transaction.wrappedAmount.formatted())
                             .font(.system(size: 15.0, weight: .bold))
-                            .foregroundStyle(.black)
                     }
                     HStack {
                         Text(transaction.wrappedDes.isEmpty == true ? "(No description)" : transaction.description)
                             .font(.system(size: 14.0))
-                            .foregroundStyle(.black)
                         Spacer()
-                        Text(transaction.wrappedDate?.formatted() ?? "")
+                        Text(transaction.wrappedDate.formatted())
                             .font(.system(size: 14.0))
                             .padding(.vertical, 4.0)
                             .padding(.horizontal, 8.0)
                             .background(Color.lightGradeShade.opacity(0.5))
                             .clipShape(RoundedRectangle(cornerRadius: 8.0))
-                            .foregroundStyle(.black)
                     }
                 }
             }
