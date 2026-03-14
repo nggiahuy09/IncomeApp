@@ -28,13 +28,13 @@ struct HomeView: View {
     @AppStorage("currency") var currency = Currency.usd
     @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
 
-    @FetchRequest(sortDescriptors: []) var transactionsCoreData: FetchedResults<TransactionItem>
+    @FetchRequest(sortDescriptors: []) var transactions: FetchedResults<TransactionItem>
 
     @Environment(\.managedObjectContext) private var viewContext
 
     private var displayTransactions: [TransactionItem] {
         // sorting by date
-        let sortedTransactions = orderDescending ? transactionsCoreData.sorted(by: { $0.wrappedDate > $1.wrappedDate}) : transactionsCoreData.sorted(
+        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.wrappedDate > $1.wrappedDate}) : transactions.sorted(
             by: {$0.wrappedDate < $1.wrappedDate
             })
         // filtering by minimum
@@ -46,7 +46,7 @@ struct HomeView: View {
     @State private var selectedTransaction: TransactionItem?
 
     private var expenses: Double {
-        transactionsCoreData
+        transactions
             .filter { $0.wrappedTransactionType == .expense }  // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
@@ -54,7 +54,7 @@ struct HomeView: View {
     }
 
     private var incomes: Double {
-        transactionsCoreData
+        transactions
             .filter { $0.wrappedTransactionType == .income }   // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
@@ -131,7 +131,7 @@ struct HomeView: View {
 
     private func delete(at offsets: IndexSet) {
         for index in offsets {
-            let transactionToDelete = transactionsCoreData[index]
+            let transactionToDelete = transactions[index]
             viewContext.delete(transactionToDelete)
         }
     }
@@ -142,7 +142,7 @@ struct HomeView: View {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(transactionsCoreData, content: {transaction in
+                        ForEach(transactions, content: {transaction in
                             Button(action: {
                                 selectedTransaction = transaction
                             }, label: {
