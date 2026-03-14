@@ -38,7 +38,7 @@ extension TransactionItem {
 
     var wrappedDes: String { return des ?? "" }
 
-    var wrappedDate: Date? { return date ?? Date() }
+    var wrappedDate: Date { return date ?? Date() }
 
     var wrappedTransactionType: TransactionType {
         return TransactionType(rawValue: Int(type)) ?? .income

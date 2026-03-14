@@ -24,24 +24,21 @@
 import SwiftUI
 
 struct HomeView: View {
-
-    @State private var transactions: [Transaction] = []
-
     @AppStorage("orderDescending") var orderDescending = false
     @AppStorage("currency") var currency = Currency.usd
     @AppStorage("filterMinumum") var filterMinimum: Double = 0.0
 
-    @FetchRequest(sortDescriptors: []) var transactionsCoreData: FetchedResults<TransactionItem>
+    @FetchRequest(sortDescriptors: []) var transactions: FetchedResults<TransactionItem>
 
     @Environment(\.managedObjectContext) private var viewContext
 
-    private var displayTransactions: [Transaction] {
+    private var displayTransactions: [TransactionItem] {
         // sorting by date
-        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.date > $1.date}) : transactions.sorted(
-            by: {$0.date < $1.date
+        let sortedTransactions = orderDescending ? transactions.sorted(by: { $0.wrappedDate > $1.wrappedDate}) : transactions.sorted(
+            by: {$0.wrappedDate < $1.wrappedDate
             })
         // filtering by minimum
-        let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
+        let filteredTransactions = sortedTransactions.filter({$0.wrappedAmount > filterMinimum})
         return filteredTransactions
     }
 
@@ -50,7 +47,7 @@ struct HomeView: View {
 
     private var expenses: Double {
         transactions
-            .filter { $0.transactionType == .expense }  // $0: current transaction
+            .filter { $0.wrappedTransactionType == .expense }  // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
             }
@@ -58,7 +55,7 @@ struct HomeView: View {
 
     private var incomes: Double {
         transactions
-            .filter { $0.transactionType == .income }   // $0: current transaction
+            .filter { $0.wrappedTransactionType == .income }   // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
             }
@@ -68,7 +65,7 @@ struct HomeView: View {
         return VStack {
             Spacer()
             NavigationLink(destination: {
-                AddTransactionView(transactions: $transactions)
+                AddTransactionView()
             }, label: {
                 Text("+")
                     .font(.largeTitle)
@@ -80,7 +77,7 @@ struct HomeView: View {
             .padding(.bottom, 8.0)
         }
     }
-    
+
     fileprivate func BalanceView(expenses: Double, incomes: Double) -> some View {
         let numberFormatter = NumberFormatter()
         numberFormatter.numberStyle = .currency
@@ -134,7 +131,7 @@ struct HomeView: View {
 
     private func delete(at offsets: IndexSet) {
         for index in offsets {
-            let transactionToDelete = transactionsCoreData[index]
+            let transactionToDelete = transactions[index]
             viewContext.delete(transactionToDelete)
         }
     }
@@ -145,11 +142,12 @@ struct HomeView: View {
                 VStack {
                     BalanceView(expenses: expenses, incomes: incomes)
                     List {
-                        ForEach(transactionsCoreData, content: {transaction in
+                        ForEach(transactions, content: {transaction in
                             Button(action: {
                                 selectedTransaction = transaction
                             }, label: {
                                 TransactionItemView(transaction: transaction)
+                                    .foregroundStyle(.black)
                             })
                         })
                         .onDelete(perform: delete)
@@ -160,7 +158,7 @@ struct HomeView: View {
             }
             .navigationTitle("Income App")
             .navigationDestination(item: $selectedTransaction, destination: { transactionToEdit in
-                AddTransactionView(transactionToEdit: transactionToEdit, transactions: $transactions)
+                AddTransactionView(transactionToEdit: transactionToEdit)
             })
             .navigationDestination(isPresented: $showSettingsView, destination: {
                 SettingsView()
@@ -179,5 +177,6 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView()
+    let dataManager = DataManager.sharedPreview
+    return HomeView().environment(\.managedObjectContext, dataManager.container.viewContext)
 }
