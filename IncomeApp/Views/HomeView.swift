@@ -199,6 +199,9 @@ struct HomeView: View {
 }
 
 #Preview {
-    let dataManager = DataManager.sharedPreview
-    return HomeView().environment(\.managedObjectContext, dataManager.container.viewContext)
+    //    let dataManager = DataManager.sharedPreview
+    //    return HomeView().environment(\.managedObjectContext, dataManager.container.viewContext)
+
+    let previewContainer = PreviewHelper.previewContainer
+    return HomeView().modelContainer(previewContainer)
 }
