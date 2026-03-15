@@ -40,7 +40,8 @@ struct HomeView: View {
     //    @FetchRequest(sortDescriptors: []) var transactions: FetchedResults<TransactionItem>
     //    @Environment(\.managedObjectContext) private var viewContext
 
-    @Query var transactionsSwiftData: [TransactionModel]
+    @Query var transactions: [TransactionModel]
+    @Environment(\.modelContext) private var modelContext
 
     private var displayTransactions: [TransactionModel] {
         //        // sorting by date
@@ -50,7 +51,7 @@ struct HomeView: View {
         //        // filtering by minimum
         //        let filteredTransactions = sortedTransactions.filter({$0.wrappedAmount > filterMinimum})
 
-        let sortedTransactions = orderDescending ? transactionsSwiftData.sorted(by: {$0.date > $1.date}) : transactionsSwiftData.sorted(by: {$0.date < $1.date})
+        let sortedTransactions = orderDescending ? transactions.sorted(by: {$0.date > $1.date}) : transactions.sorted(by: {$0.date < $1.date})
         let filteredTransactions = sortedTransactions.filter({$0.amount > filterMinimum})
         return filteredTransactions
     }
@@ -60,7 +61,7 @@ struct HomeView: View {
     @State private var selectedTransaction: TransactionModel?
 
     private var expenses: Double {
-        transactionsSwiftData
+        transactions
             .filter { $0.type == .expense }  // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
@@ -68,7 +69,7 @@ struct HomeView: View {
     }
 
     private var incomes: Double {
-        transactionsSwiftData
+        transactions
             .filter { $0.type == .income }   // $0: current transaction
             .reduce(0.0) { total, transaction in
                 total + transaction.amount
@@ -145,8 +146,15 @@ struct HomeView: View {
 
     private func delete(at offsets: IndexSet) {
         for index in offsets {
-            let transactionToDelete = transactionsSwiftData[index]
+            let transactionToDelete = transactions[index]
             //            viewContext.delete(transactionToDelete)
+            modelContext.delete(transactionToDelete)
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            print("Failed to delete transaction.")
         }
     }
 
@@ -191,6 +199,9 @@ struct HomeView: View {
 }
 
 #Preview {
-    let dataManager = DataManager.sharedPreview
-    return HomeView().environment(\.managedObjectContext, dataManager.container.viewContext)
+    //    let dataManager = DataManager.sharedPreview
+    //    return HomeView().environment(\.managedObjectContext, dataManager.container.viewContext)
+
+    let previewContainer = PreviewHelper.previewContainer
+    return HomeView().modelContainer(previewContainer)
 }

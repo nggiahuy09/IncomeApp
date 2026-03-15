@@ -97,8 +97,6 @@ struct AddTransactionView: View {
                         transactionToEdit.des = transactionDes.trimmingCharacters(in: .whitespacesAndNewlines)
                         transactionToEdit.type = selectedTransactionType
                         transactionToEdit.amount = amount
-
-
                     } else {
                         // coreData code
 
@@ -133,6 +131,12 @@ struct AddTransactionView: View {
                             date: Date()
                         )
                         modelContext.insert(transaction)
+
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            print("Failed to add new transaction.")
+                        }
                     }
 
                     dismiss()
